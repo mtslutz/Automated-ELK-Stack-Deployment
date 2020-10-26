@@ -1,3 +1,4 @@
+---
 - name: Config elk VM with Docker
   hosts: elk
   remote_user: RedAdmin
