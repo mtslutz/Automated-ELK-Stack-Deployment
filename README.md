@@ -5,13 +5,14 @@ The files in this repository were used to configure the network depicted below.
 
 https://github.com/mtslutz/Automated-ELK-Stack-Deployment/blob/main/images/network-diagram.png
 
-These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the _____ file may be used to install only certain pieces of it, such as Filebeat.
+These files have been tested and used to generate a live ELK deployment on Azure. They can be used to recreate the entire deployment pictured above. Alternatively, select portions of the install-elk.yml file may be used to install only certain pieces of it, such as Filebeat or Metricbeat.
 
  https://github.com/mtslutz/Automated-ELK-Stack-Deployment/blob/main/install-elk.yml
 
 This document contains the following details:
 - Description of the Topology
 - Access Policies
+- ELK Server Configuration
 - ELK Configuration
   - Beats in Use
   - Machines Being Monitored
@@ -22,40 +23,48 @@ This document contains the following details:
 
 The main purpose of this network is to expose a load-balanced and monitored instance of DVWA, the D*mn Vulnerable Web Application.
 
-Load balancing ensures that the application will be highly _____, in addition to restricting _____ to the network.
-- _TODO: What aspect of security do load balancers protect? What is the advantage of a jump box?_
+Load balancing ensures that the application will be highly available, in addition to restricting unwanted inbound access to the network. The load balancer ensures incoming traffic will be shared by both vulnerable web servers. Access controls will ensure that only authorized users--namely, ourselves--will be able to connect in the first place.
 
-Integrating an ELK server allows users to easily monitor the vulnerable VMs for changes to the _____ and system _____.
-- _TODO: What does Filebeat watch for?_
-- _TODO: What does Metricbeat record?_
+Integrating an ELK server allows users to easily monitor the vulnerable VMs for changes to the file systems of the VMs on the network, as well as watch system metrics like CPU usage, attempted SSH logins, sudo escalation failutes, etc.
 
 The configuration details of each machine may be found below.
-_Note: Use the [Markdown Table Generator](http://www.tablesgenerator.com/markdown_tables) to add/remove values from the table_.
 
-| Name     | Function | IP Address | Operating System |
-|----------|----------|------------|------------------|
-| Jump Box | Gateway  | 10.0.0.1   | Linux            |
-| TODO     |          |            |                  |
-| TODO     |          |            |                  |
-| TODO     |          |            |                  |
+| Name                 | Function   | IP Address | Operating System |
+|----------------------|------------|------------|------------------|
+| Jump-Box-Provisioner | Gateway    | 10.0.0.4   | Linux            |
+| Web-1                | Web Server | 10.0.0.5   | Linux            |
+| Web-2                | Web Server | 10.0.0.6   | Linux            |
+| Web-3                | Web Server | 10.0.0.7   | Linux            |
+| ELK-SERVER           | Monitoring | 10.1.0.4   | Linux            |
+
+In addition to the above, I have provisioned a load balancer in Azure in front of all machines except Jump-Box-Provisioner. The load balancer is named Red-Team-LB and its targets are organized into the following availability zones:
+- Availability Zone 1: Web-1 + Web-2 + Web-3
+- Availability Zone 2: ELK-SERVER
 
 ### Access Policies
 
 The machines on the internal network are not exposed to the public Internet. 
 
-Only the _____ machine can accept connections from the Internet. Access to this machine is only allowed from the following IP addresses:
-- _TODO: Add whitelisted IP addresses_
+Only the Jump-Box-Provisioner machine can accept connections from the Internet. Access to this machine is only allowed from the following IP address: 70.112.146.48.
 
-Machines within the network can only be accessed by _____.
-- _TODO: Which machine did you allow to access your ELK VM? What was its IP address?_
+Machines within the network can only be accessed by the Jump-Box-Provisioner and each other using SSH. The Web-1, Web-2, and Web-3 virtual machines all send traffic to the ELK server.
 
 A summary of the access policies in place can be found in the table below.
 
-| Name     | Publicly Accessible | Allowed IP Addresses |
-|----------|---------------------|----------------------|
-| Jump Box | Yes/No              | 10.0.0.1 10.0.0.2    |
-|          |                     |                      |
-|          |                     |                      |
+| Name                 | Publicly Accessible | Allowed IP Addresses |
+|----------------------|---------------------|----------------------|
+| Jump-Box-Provisioner | Yes                 | 70.112.146.48        |
+| Web-1                | No                  | 10.0.0.1-254         |
+| Web-2                | No                  | 10.0.0.1-254         |
+| Web-3                | No                  | 10.0.0.1-254         |
+| ELK-SERVER           | Yes                 | 70.112.146.48        |
+
+### ELK Server Configuration
+The ELK VM exposes an Elastic Stack instance. Docker is used to download and manage an ELK container.
+
+Rather than configure ELK manually, I developed a reusable Ansible Playbook to accomplish the task. This playbook is duplicated below.
+
+To use this playbook, one must log into Jump-Box-Provisioner, then use the command: ansible-playbook install_elk.yml elk. This runs the install_elk.yml playbook on the elk host.
 
 ### Elk Configuration
 
