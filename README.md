@@ -57,7 +57,7 @@ A summary of the access policies in place can be found in the table below.
 | Web-1                | No                  | 10.0.0.1-254         |
 | Web-2                | No                  | 10.0.0.1-254         |
 | Web-3                | No                  | 10.0.0.1-254         |
-| ELK-SERVER           | Yes                 | 70.112.146.48        |
+| ELK-SERVER           | No                  | 10.0.0.1-254         |
 
 ### ELK Server Configuration
 The ELK VM exposes an Elastic Stack instance. Docker is used to download and manage an ELK container.
